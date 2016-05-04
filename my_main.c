@@ -56,8 +56,8 @@ void my_main( int polygons ) {
   double step;
   double xval, yval, zval;
   struct matrix *transform;
-  struct matrix *tmp;
-  struct stack *s;
+  struct matrix *temp;
+  struct stack *stax;
   screen t;
 
   color g;
@@ -66,41 +66,29 @@ void my_main( int polygons ) {
   g.green = 0;
 
   stax = new_stack();
-  tmp = new_matrix(4, 1000);
+  temp = new_matrix(4, 1000);
+  transform = new_matrix(4, 4);
   clear_screen( t );
 
   for (i=0;i<lastop;i++) {  
     switch (op[i].opcode) {
     case BOX:
-      add_box(tmp, op[i].op.box.d0[0], op[i].op.boxd0[1], op[i].op.box.d0[2], op[i].op.box.d1[0], op[i].op.box.d1[1], op[i].op.box.d1[2]);
-      matrix_mult(stax->data[stax->top], tmp);
-      draw_polygon(stax, t, g);
+      add_box(temp, op[i].op.box.d0[0], op[i].op.box.d0[1], op[i].op.box.d0[2], op[i].op.box.d1[0], op[i].op.box.d1[1], op[i].op.box.d1[2]);
+      matrix_mult(stax->data[stax->top], temp);
+      draw_polygons(temp, t, g);
       free_matrix(temp);
       break;
     case SPHERE:
-      add_sphere(temp, op[i]op.sphere.d[0], op[i]op.sphere.d[1], op[i]op.sphere.d[2], op[i]op.sphere.r, 10);
-      
+      add_sphere(temp, op[i].op.sphere.d[0], op[i].op.sphere.d[1], op[i].op.sphere.d[2], op[i].op.sphere.r, 10);
+      matrix_mult(stax->data[stax->top], temp);
+      draw_polygons(temp, t, g);
+      free_matrix(temp);
+    case TORUS:
+      add_torus(temp, op[i].op.torus.d[0], op[i].op.torus.d[1], op[i].op.torus.d[2], op[i].op.torus.r0,op[i].op.torus.r1, 10);
+      matrix_mult(stax->data[stax->top], temp);
+      draw_polygons(temp, t, g);
+      free_matrix(temp);
       /*
-    case SPHERE:
-      (strncmp(line, "sphere", strlen(line)) == 0 ) {
-	fgets(line, 255, f);
-	sscanf(line, "%lf %lf %lf", &x, &y, &z);
-	add_sphere(tmp, x, y, z, 10);
-	matrix_mult(stax->data[stax->top], tmp);
-	draw_polygons(tmp, s, g);
-	free_matrix(tmp);
-	//printf( "%lf %lf %lf\n", x, y, z);
-      }
-    case TORUS;
-      else if (strncmp(line, "torus", strlen(line)) == 0 ) {
-	fgets(line, 255, f);
-	sscanf(line, "%lf %lf %lf %lf", &x, &y, &z, &z1);
-	add_torus(tmp, x, y, z, z1, 10);
-	matrix_mult(stax->data[stax->top], tmp);
-	draw_polygons(tmp, s, g);
-	free_matrix(tmp);
-	//printf( "%lf %lf %lf\n", x, y, z);
-      }
     case SCALE;
       else if ( strncmp(line, "scale", strlen(line)) == 0 ) {
 	//printf("SCALE\n");
@@ -166,5 +154,6 @@ void my_main( int polygons ) {
     free_matrix(tmp);
     fclose(f);
       */
+    }
   }
 }
