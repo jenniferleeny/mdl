@@ -65,35 +65,24 @@ void my_main( int polygons ) {
   g.blue = 0;
   g.green = 0;
 
-  s = new_stack();
+  stax = new_stack();
   tmp = new_matrix(4, 1000);
   clear_screen( t );
 
   for (i=0;i<lastop;i++) {  
     switch (op[i].opcode) {
-      case LINE;
-      if ( strncmp(line, "line", strlen(line)) == 0 ) {
-	fgets(line, 255, f);
-	sscanf(line, "%lf %lf %lf %lf %lf %lf", &x, &y, &z, &x1, &y1, &z1);
-	add_edge(tmp, x, y, z, x1, y1, z1);
-	matrix_mult(stax->data[stax->top], tmp);
-	draw_lines(tmp, s, g);
-	free_matrix(tmp);
-	// printf( "%lf %lf %lf %lf %lf %lf\n", x, y, z, x1, y1, z1);
-      }
-    case BOX;
-      else if ( strncmp(line, "box", strlen(line)) == 0 ) {
-	fgets(line, 255, f);
-	sscanf(line, "%lf %lf %lf %lf %lf %lf", &x, &y, &z, &x1, &y1, &z1);
-	add_box(tmp, x, y, z, x1, y1, z1);
-	matrix_mult(stax->data[stax->top], tmp);
-	draw_polygons(tmp, s, g);
-	free_matrix(tmp);
-	//add_box(pm, x, y, z, x1, y1, z1);
-	// printf( "%lf %lf %lf %lf %lf %lf\n", x, y, z, x1, y1, z1);
-      }
-    case SPHERE;
-      else if (strncmp(line, "sphere", strlen(line)) == 0 ) {
+    case BOX:
+      add_box(tmp, op[i].op.box.d0[0], op[i].op.boxd0[1], op[i].op.box.d0[2], op[i].op.box.d1[0], op[i].op.box.d1[1], op[i].op.box.d1[2]);
+      matrix_mult(stax->data[stax->top], tmp);
+      draw_polygon(stax, t, g);
+      free_matrix(temp);
+      break;
+    case SPHERE:
+      add_sphere(temp, op[i]op.sphere.d[0], op[i]op.sphere.d[1], op[i]op.sphere.d[2], op[i]op.sphere.r, 10);
+      
+      /*
+    case SPHERE:
+      (strncmp(line, "sphere", strlen(line)) == 0 ) {
 	fgets(line, 255, f);
 	sscanf(line, "%lf %lf %lf", &x, &y, &z);
 	add_sphere(tmp, x, y, z, 10);
@@ -176,5 +165,6 @@ void my_main( int polygons ) {
     free_matrix(transform);
     free_matrix(tmp);
     fclose(f);
+      */
   }
 }
