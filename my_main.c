@@ -83,77 +83,62 @@ void my_main( int polygons ) {
       matrix_mult(stax->data[stax->top], temp);
       draw_polygons(temp, t, g);
       free_matrix(temp);
+      break;
     case TORUS:
       add_torus(temp, op[i].op.torus.d[0], op[i].op.torus.d[1], op[i].op.torus.d[2], op[i].op.torus.r0,op[i].op.torus.r1, 10);
       matrix_mult(stax->data[stax->top], temp);
       draw_polygons(temp, t, g);
       free_matrix(temp);
-      /*
-    case SCALE;
-      else if ( strncmp(line, "scale", strlen(line)) == 0 ) {
-	//printf("SCALE\n");
-	fgets(line, 255, f);
-	//line[strlen(line)-1]='\0';      
-	sscanf(line, "%lf %lf %lf", &x, &y, &z);
-	tmp = make_scale(x, y, z);
-	matrix_mult(tmp, stax->data[ stax->top ]);
-	//print_matrix(transform);
-      }
-    case MOVE;
-      else if ( strncmp(line, "translate", strlen(line)) == 0 ) {
-	//printf("TRANSLATE\n");
-	fgets(line, 255, f);
-	//      line[strlen(line)-1]='\0';      
-	sscanf(line, "%lf %lf %lf", &x, &y, &z);
-	tmp = make_translate(x, y, z);
-	matrix_mult(tmp, stax->data[ stax->top ]);
-	//print_matrix(transform);
-      }
-    case ROTATE;
-
-    case APPLY;
-      else if ( strncmp(line, "apply", strlen(line)) == 0 ) {
-	//printf("APPLY!\n");
-	//print_matrix( transform );
-	//      print_matrix(pm);
-	matrix_mult(transform, pm);
-      }
-    case PUSH;
-      else if (strncmp (line, "push", strlen(line)) == 0) {
-	push(stax);
-      }
-    case POP;
-      else if (strncmp (line, "pop", strlen(line)) == 0) {
+      break;
+    case SCALE:
+      transform = make_scale(op[i].op.scale.d[0], op[i].op.scale.d[1], op[i].op.scale.d[2]);
+      matrix_mult(stax->data[stax->top], transform);
+      copy_matrix(transform, stax->data[stax->top]);
+      free_matrix(transform);
+      break;
+    case MOVE:
+      transform = make_translate(op[i].op.move.d[0], op[i].op.move.d[1], op[i].op.move.d[2]);
+      matrix_mult(stax->data[stax->top], transform);
+      copy_matrix(transform, stax->data[stax->top]);
+      free_matrix(transform);
+      break;
+    case PUSH:
+      push(stax);
+      break;
+    case POP:
       pop(stax);
-      }
-    case DISPLAY;
-      else if ( strncmp(line, "display", strlen(line)) == 0 ) {
-	//clear_screen(s);
-	//draw_polygons(pm, s, g);
-	display(s);
-      }
-    case SAVE;
-      else if ( strncmp(line, "save", strlen(line)) == 0 ) {
-	fgets(line, 255, f);
-	// line[strlen(line)-1] = '\0';
-	//clear_screen(s);
-	//draw_polygons(tmp, s, g);
-	save_extension(s, line);
-      }
-      else if ( strncmp(line, "clear", strlen(line)) == 0 ) {
-	pm->lastcol = 0;
-      }
-      else if ( strncmp(line, "quit", strlen(line)) == 0 ) {
-	return;
-      }
-      else if ( line[0] != '#' ) {
-	printf("Invalid command\n");
-      }
-    }
-    free_matrix(transform);
-    free_matrix(tmp);
-    fclose(f);
-      */
+      break;
+    case ROTATE:
+      if (op[i].op.rotate.axis == 0)
+	//case X
+	transform = make_rotX(op[i].op.rotate.degrees * M_PI/180 );
+      else if (op[lastop].op.rotate.axis == 1)
+	//case Y
+	transform = make_rotY(op[i].op.rotate.degrees * M_PI/180 );
+      else if (op[lastop].op.rotate.axis == 2)
+	//case Z
+	transform = make_rotZ(op[i].op.rotate.degrees * M_PI/180 );
+      matrix_mult(stax->data[stax->top], transform);
+      copy_matrix(transform, stax->data[stax->top]);
+      free_matrix(transform);
+      break;
+    case LINE:
+      add_edge(temp, 
+	       op[i].op.line.p0[0],op[i].op.line.p0[1],op[i].op.line.p0[2],
+	       op[i].op.line.p1[0],op[i].op.line.p1[1],op[i].op.line.p1[2]);
+      matrix_mult(stax->data[stax->top], temp);
+      draw_lines(temp, t, g);
+      free_matrix(temp);
+      break;
+    case DISPLAY:
+      display(t);
+      break;
+    case SAVE:
+      save_extension(t,op[i].op.save.p->name);
+      break;
     }
   }
+  free_matrix(temp);
+  free_matrix(transform);
+  free_stack(stax);
 }
