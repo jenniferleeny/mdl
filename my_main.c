@@ -130,11 +130,11 @@ void my_main( int polygons ) {
       draw_lines(temp, t, g);
       free_matrix(temp);
       break;
-    case DISPLAY:
-      display(t);
-      break;
     case SAVE:
       save_extension(t,op[i].op.save.p->name);
+      break;
+    case DISPLAY:
+      display(t);
       break;
     }
   }
